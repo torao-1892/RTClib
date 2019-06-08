@@ -1,13 +1,16 @@
-// Date and time functions using a DS1307 RTC connected via I2C and Wire lib
+// Date and time functions using a PCF8523 RTC connected via I2C and Wire lib
 #include <Wire.h>
 #include "RTClib.h"
 
-RTC_DS1307 rtc;
+RTC_PCF8523 rtc;
 
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 void setup () {
-  while (!Serial); // for Leonardo/Micro/Zero
+
+  while (!Serial) {
+    delay(1);  // for Leonardo/Micro/Zero
+  }
 
   Serial.begin(57600);
   if (! rtc.begin()) {
@@ -15,7 +18,7 @@ void setup () {
     while (1);
   }
 
-  if (! rtc.isrunning()) {
+  if (! rtc.initialized()) {
     Serial.println("RTC is NOT running!");
     // following line sets the RTC to the date & time this sketch was compiled
     // rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
@@ -49,10 +52,10 @@ void loop () {
     Serial.print(now.unixtime() / 86400L);
     Serial.println("d");
     
-    // calculate a date which is 7 days and 30 seconds into the future
+    // calculate a date which is 7 days, 12 hours and 30 seconds into the future
     DateTime future (now + TimeSpan(7,12,30,6));
     
-    Serial.print(" now + 7d + 30s: ");
+    Serial.print(" now + 7d + 12h + 30m + 6s: ");
     Serial.print(future.year(), DEC);
     Serial.print('/');
     Serial.print(future.month(), DEC);
